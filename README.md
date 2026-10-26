@@ -37,7 +37,6 @@ Base URL: `https://api.studio.nebius.ai/v1/`
 | `multi_agent.py` | Async three-agent sentiment pipeline → composite score |
 | `train_model.py` | Train XGB on technicals + sentiment → `xgb_crypto.pkl` |
 | `app.py` | Streamlit dashboard: news analysis, trade signal, Risk Governor |
-| `nebius_api_key` or `nebius_api_key.rtf` | Nebius API key (local only; do not commit) |
 
 ---
 
@@ -67,13 +66,9 @@ brew install libomp
 
 ### 3. Nebius API key
 
-Create a plain-text file in the project root:
+Create a .env file in the project root:
 
-```text
-nebius_api_key
-```
-
-Paste your Nebius Studio API key (one line, no quotes). The app also reads `nebius_api_key.rtf` if present.
+Paste your Nebius Studio API key pair value
 
 ### 4. Build data and model
 

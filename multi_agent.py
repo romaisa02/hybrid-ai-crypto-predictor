@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 import re
 from pathlib import Path
 from typing import Final
@@ -19,8 +20,8 @@ NEBIUS_BASE_URL: Final[str] = "https://api.studio.nebius.ai/v1/"
 MODEL_REASONING: Final[str] = "nvidia/Nemotron-3-Ultra-550b-a55b"
 # Alternative for retail: nvidia/nemotron-3-super-120b-a12b
 MODEL_RETAIL_FAST: Final[str] = "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B"
-KEY_PLAIN: Final[str] = "nebius_api_key"
-KEY_RTF: Final[str] = "nebius_api_key.rtf"
+ENV_FILE: Final[str] = ".env"
+ENV_KEYS: Final[tuple[str, ...]] = ("NEBIUS_API_KEY", "OPENAI_API_KEY")
 
 SCORE_MIN: Final[float] = -1.0
 SCORE_MAX: Final[float] = 1.0
@@ -71,24 +72,36 @@ def _strip_rtf(raw: str) -> str:
     return text.strip()
 
 
+def _read_dotenv_key(dotenv_text: str) -> str | None:
+    """Parse a simple .env file and return the first configured API key."""
+    for line in dotenv_text.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip("\"'")
+        if key in ENV_KEYS and value:
+            return value
+    return None
+
+
 def load_nebius_api_key() -> str:
-    """Load API key from nebius_api_key or nebius_api_key.rtf in this folder."""
-    plain_path = _SCRIPT_DIR / KEY_PLAIN
-    rtf_path = _SCRIPT_DIR / KEY_RTF
+    """Load the Nebius API key from environment variables or a local .env file."""
+    for key_name in ENV_KEYS:
+        value = os.getenv(key_name)
+        if value and value.strip():
+            return value.strip()
 
-    if plain_path.is_file():
-        key = plain_path.read_text(encoding="utf-8").strip()
-        if key:
-            return key
-
-    if rtf_path.is_file():
-        key = _strip_rtf(rtf_path.read_text(encoding="utf-8"))
+    dotenv_path = _SCRIPT_DIR / ENV_FILE
+    if dotenv_path.is_file():
+        key = _read_dotenv_key(dotenv_path.read_text(encoding="utf-8"))
         if key:
             return key
 
     raise FileNotFoundError(
-        f"Nebius API key not found. Add {_SCRIPT_DIR / KEY_PLAIN} "
-        f"or {_SCRIPT_DIR / KEY_RTF}."
+        f"Nebius API key not found. Add {dotenv_path} with NEBIUS_API_KEY=... "
+        "or set the NEBIUS_API_KEY environment variable."
     )
 
 
