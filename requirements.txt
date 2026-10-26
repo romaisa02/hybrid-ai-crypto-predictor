@@ -1,0 +1,7 @@
+streamlit
+xgboost
+pandas
+pandas-ta
+joblib
+openai
+numpy
