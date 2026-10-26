@@ -4,4 +4,4 @@ venv/
 .DS_Store
 .env
 .cursorrules.rtf
-nebius_api_key.rtf
+.env
