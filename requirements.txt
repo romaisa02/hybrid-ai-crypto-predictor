@@ -5,4 +5,4 @@ numpy
 numba
 joblib
 openai
-git+https://github.com/twopirllc/pandas-ta.git
+pandas-ta-classic
