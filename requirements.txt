@@ -1,7 +1,7 @@
 streamlit
 xgboost
 pandas
-numpy<2.0
+numpy
 pandas-ta
 joblib
 openai
