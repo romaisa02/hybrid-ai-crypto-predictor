@@ -39,32 +39,6 @@ def _init_session_state() -> None:
             st.session_state[key] = value
 
 
-def _risk_governor_loop() -> None:
-    """Background simulation: update drawdown every 5 seconds."""
-    rng = np.random.default_rng()
-    while True:
-        time.sleep(RISK_TICK_SEC)
-        equity = st.session_state.get("risk_equity", 1.0)
-        peak = st.session_state.get("risk_peak_equity", 1.0)
-
-        equity *= 1.0 + float(rng.normal(0.0, 0.003))
-        peak = max(peak, equity)
-        drawdown = (equity - peak) / peak if peak > 0 else 0.0
-
-        st.session_state["risk_equity"] = equity
-        st.session_state["risk_peak_equity"] = peak
-        st.session_state["risk_drawdown_pct"] = drawdown
-        st.session_state["risk_circuit_breaker"] = drawdown <= DRAWDOWN_LIMIT
-
-
-def start_risk_governor_thread() -> None:
-    if st.session_state.get("risk_thread_started"):
-        return
-    thread = threading.Thread(target=_risk_governor_loop, daemon=True)
-    thread.start()
-    st.session_state["risk_thread_started"] = True
-
-
 @st.cache_resource
 def load_model():
     model_path = _SCRIPT_DIR / OUTPUT_MODEL
@@ -229,7 +203,6 @@ def render_risk_governor() -> None:
 def main() -> None:
     st.set_page_config(page_title="Hybrid AI Crypto", layout="wide")
     _init_session_state()
-    """start_risk_governor_thread()"""
 
     st.title("Hybrid AI Crypto Prediction System")
     st.caption(
