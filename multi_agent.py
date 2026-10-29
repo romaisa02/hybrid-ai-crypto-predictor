@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 NEBIUS_BASE_URL: Final[str] = "https://api.studio.nebius.ai/v1/"
 MODEL_REASONING: Final[str] = "nvidia/Nemotron-3-Ultra-550b-a55b"
 # Alternative for retail: nvidia/nemotron-3-super-120b-a12b
-MODEL_RETAIL_FAST: Final[str] = "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B"
+MODEL_RETAIL_FAST: Final[str] = "nvidia/Nemotron-3_5-Lightning"
 ENV_FILE: Final[str] = ".env"
 ENV_KEYS: Final[tuple[str, ...]] = ("NEBIUS_API_KEY", "OPENAI_API_KEY")
 

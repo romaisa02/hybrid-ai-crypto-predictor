@@ -23,7 +23,7 @@ Combines **technical indicators** (RSI, EMA distance, ATR), **multi-agent LLM se
 |--------|--------|
 | Macro Analyst | `nvidia/Nemotron-3-Ultra-550b-a55b` |
 | Whale Tracker | `nvidia/Nemotron-3-Ultra-550b-a55b` |
-| Retail Hype Tracker | `nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B` |
+| Retail Hype Tracker | `nvidia/Nemotron-3_5-Lightning` |
 
 Base URL: `https://api.studio.nebius.ai/v1/`
 
