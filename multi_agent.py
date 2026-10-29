@@ -60,18 +60,6 @@ _SCRIPT_DIR = Path(__file__).resolve().parent
 _client: AsyncOpenAI | None = None
 
 
-def _strip_rtf(raw: str) -> str:
-    """Extract plain text token from a minimal RTF key file."""
-    if "\\cf0 " in raw:
-        token = raw.split("\\cf0 ", 1)[1]
-        token = token.rstrip("}")
-        return token.strip()
-    # Fallback: remove RTF control words and braces
-    text = re.sub(r"\\[a-z]+\d*\s?", "", raw)
-    text = text.replace("{", "").replace("}", "")
-    return text.strip()
-
-
 def _read_dotenv_key(dotenv_text: str) -> str | None:
     """Parse a simple .env file and return the first configured API key."""
     for line in dotenv_text.splitlines():
