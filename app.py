@@ -184,10 +184,26 @@ def render_trade_signal() -> None:
 @st.fragment(run_every=timedelta(seconds=5))
 def render_risk_governor() -> None:
     st.subheader("Risk Governor")
-    drawdown = float(st.session_state.get("risk_drawdown_pct", 0.0))
-    equity = float(st.session_state.get("risk_equity", 1.0))
-    breaker = bool(st.session_state.get("risk_circuit_breaker", False))
 
+    # 1. Read existing state
+    equity = float(st.session_state.get("risk_equity", 1.0))
+    peak = float(st.session_state.get("risk_peak_equity", 1.0))
+
+    # 2. Compute live update directly on the main Streamlit thread
+    rng = np.random.default_rng()
+    equity *= 1.0 + float(rng.normal(0.0, 0.003))
+    peak = max(peak, equity)
+    drawdown = (equity - peak) / peak if peak > 0 else 0.0
+
+    # 3. Write updated state back to session_state
+    st.session_state["risk_equity"] = equity
+    st.session_state["risk_peak_equity"] = peak
+    st.session_state["risk_drawdown_pct"] = drawdown
+    st.session_state["risk_circuit_breaker"] = drawdown <= DRAWDOWN_LIMIT
+
+    breaker = st.session_state["risk_circuit_breaker"]
+
+    # 4. Render alerts & metrics
     if breaker:
         st.markdown(
             """
@@ -206,15 +222,14 @@ def render_risk_governor() -> None:
     r1.metric("Simulated equity (normalized)", f"{equity:.4f}")
     r2.metric("Drawdown", f"{drawdown * 100:.2f}%")
     st.caption(
-        f"Background Risk Governor updates every {int(RISK_TICK_SEC)} seconds "
-        "(simulated returns)."
+        f"Risk Governor auto-refreshes and updates every {int(RISK_TICK_SEC)} seconds."
     )
 
 
 def main() -> None:
     st.set_page_config(page_title="Hybrid AI Crypto", layout="wide")
     _init_session_state()
-    start_risk_governor_thread()
+    """start_risk_governor_thread()"""
 
     st.title("Hybrid AI Crypto Prediction System")
     st.caption(
